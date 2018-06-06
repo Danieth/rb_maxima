@@ -2,7 +2,6 @@ source "https://rubygems.org"
 
 gem 'numo-gnuplot'
 gem 'awesome_print'
-gem 'parallel'
 
 group :test, :development do
   gem 'pry'
