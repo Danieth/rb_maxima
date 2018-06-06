@@ -1,12 +1,16 @@
-require "numo/gnuplot"
+require "maxima/version"
+require "maxima/core"
 
-require_relative "maxima/core"
-require_relative "maxima/command"
-require_relative "maxima/unit"
-require_relative "maxima/function"
-require_relative "maxima/histogram"
-require_relative "maxima/polynomial"
-require_relative "maxima/rational"
-require_relative "maxima/complex"
-require_relative "maxima/float"
-require_relative "helper"
+require "maxima/command"
+
+require "maxima/unit"
+require "maxima/float"
+require "maxima/rational"
+require "maxima/complex"
+
+require "maxima/function"
+
+require "maxima/histogram"
+require "maxima/polynomial"
+
+require "helper"
