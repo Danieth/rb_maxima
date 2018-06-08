@@ -7,13 +7,13 @@ module Maxima
       @plot_title    = plot_title
     end
 
-    # def inspect
-    #   if plot_title.nil? || plot_title == ""
-    #     "#{self.class}(#{self})"
-    #   else
-    #     "#{self.class}[#{plot_title}](#{self})"
-    #   end
-    # end
+    def inspect
+      if plot_title.nil? || plot_title == ""
+        "#{self.class}(#{self})"
+      else
+        "#{self.class}[#{plot_title}](#{self})"
+      end
+    end
 
     def self.parse(m)
       Rational.parse(m) || Complex.parse(m)

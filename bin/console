@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "maxima"
+
+require "pry"
+Pry.start
+
+IRB.start(__FILE__)

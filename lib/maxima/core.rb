@@ -14,6 +14,53 @@ module Maxima
     end
   end
 
+  def self.interpolate(array)
+    Command.output(lagrangian: Function) do |c|
+      c.dependencies << "interpol"
+      c.let :array, array.to_a
+      c.let_simplified :lagrangian, "lagrange(array)"
+    end
+  end
+
+  def self.integrate(function, t0 = nil, t1 = nil, v: "x")
+    expression = (t0 && t1) ? "integrate(function, #{v}, #{t0}, #{t1})" : "integrate(function, #{v})"
+
+    Command.output(integral: Function) do |c|
+      c.let :function, function
+      c.let :integral, expression
+    end
+  end
+
+  def self.diff(function, v: "x")
+    Command.output(diff: Function) do |c|
+      c.let :function, function
+      c.let :diff, "derivative(function, #{v})"
+    end
+  end
+
+  def self.plot(*maxima_objects, from_x: nil, from_y: nil)
+    maxima_objects << [[from_x.min, 0], [from_x.max, 0]] if from_x
+    maxima_objects << [[0, from_y.min], [0, to_y.max]] if from_y
+
+    maxima_objects = maxima_objects.map do |k|
+      if k.respond_to?(:to_gnu_plot)
+        k.to_gnu_plot
+      elsif k.is_a?(Array) && !k.first.is_a?(String)
+        [*k.transpose, w: "points"]
+      else
+        k
+      end
+    end
+
+    Helper.stfu do
+      Numo.gnuplot do |c|
+        c.debug_on
+        c.set title: "Maxima Plot"
+        c.plot(*maxima_objects)
+      end
+    end
+  end
+
   def self.lsquares_estimation(points, variables, equation, outputs, equation_for_mse: equation)
     Command.output(outputs => Complex, :mse => Float) do |c|
       formatted_points    = points.map { |a| mformat(a) }.join(",")
@@ -24,7 +71,7 @@ module Maxima
       c.let :M, "matrix(#{formatted_points})"
       c.let :lsquares_estimation, "lsquares_estimates(M, #{formatted_variables}, #{equation}, #{formatted_outputs})"
       c.let outputs, "sublis(lsquares_estimation[1], #{formatted_outputs})"
-      c.let :mse, "lsquares_residual_mse(M, #{formatted_variables}, #{equation_for_mse}, first (output))"
+      c.let :mse, "lsquares_residual_mse(M, #{formatted_variables}, #{equation_for_mse}, first (lsquares_estimation))"
     end
   end
 

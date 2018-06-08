@@ -1,6 +1,3 @@
-require 'parallel'
-require 'csv'
-
 module Maxima
   class Histogram < Unit
     attr_accessor :points

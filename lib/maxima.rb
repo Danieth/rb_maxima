@@ -1,3 +1,8 @@
+require "securerandom"
+require "set"
+require "csv"
+require "numo/gnuplot"
+
 require "maxima/version"
 require "maxima/core"
 
@@ -13,4 +18,4 @@ require "maxima/function"
 require "maxima/histogram"
 require "maxima/polynomial"
 
-require "helper"
+require "maxima/helper"

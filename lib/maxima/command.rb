@@ -1,6 +1,3 @@
-require 'securerandom'
-require 'set'
-
 module Maxima
   class Command
     attr_accessor :dependencies, :commands, :assigned_variables, :options
@@ -94,7 +91,7 @@ module Maxima
       input = inputs.join("$\n") + "$\n"
 
       output = with_debug(debug, input) do
-        spawn_silenced_shell_process("maxima --quiet --run-string '#{input}'")
+        Helper.spawn_silenced_shell_process("maxima --quiet --run-string '#{input}'")
       end
 
       {
