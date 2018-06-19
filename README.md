@@ -2,12 +2,14 @@
 
 Welcome to `ruby`'s best Maxima integration!
 
+Ruby developers have, for as long as I can remember, had a disheveled heap of scientific and mathematical libraries - many of which operate in pure ruby code. Given a problem we either kludge together some cobbled mess or turn to Python/R/etc. And to this I say no more! rb_maxima allows a ruby developer to directly leverage the unbridled power of the open source, lisp powered, computer algebra system that is Maxima!
+
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'maxima'
+gem 'rb_maxima'
 ```
 
 And then execute:
@@ -16,7 +18,13 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install maxima
+    $ gem install rb_maxima
+
+### Install Maxima
+
+#### macOS
+
+    $ brew install maxima
 
 ## Usage
 
