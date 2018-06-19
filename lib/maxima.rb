@@ -12,6 +12,7 @@ require "maxima/unit"
 require "maxima/float"
 require "maxima/rational"
 require "maxima/complex"
+require "maxima/boolean"
 
 require "maxima/function"
 

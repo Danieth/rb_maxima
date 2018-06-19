@@ -22,20 +22,13 @@ module Maxima
       )
     end
 
-    # def polynomial_fit(from: 0, to: 1, degree: nil)
-    #   from = to = degree if degree
-    #   polynomials = (from..to).map do |degrees|
-    #     Polynomial.fit(self, degrees)
-    #   end
-    #   best_polynomial = polynomials.min_by { |h| h[:mse].to_f }
-    #   best_polynomial[:function]
-    # end
-
     def self.parse(s)
-      Histogram.new((eval s), string: s)
+      Histogram.new((eval s), maxima_output: s)
     end
 
-    def initialize(*points)
+    def initialize(*points, **options)
+      super(**options)
+
       while points.is_a?(Array) && points.first.is_a?(Array) && points.first.first.is_a?(Array)
         points = points.flatten(1)
       end
@@ -43,35 +36,38 @@ module Maxima
       unless points.is_a?(Array) && points.first.is_a?(Array) && points.first.length == 2
         throw :invalid_histogram_points
       end
-      @points = points
-    end
 
-    def to_percentage()
-      @to_percentage ||=
-        begin
-          sum = points.sum(&:x)
-          Histogram.new(
-            points.map do |point|
-              Point.new(
-                point.x,
-                point.y.fdiv(sum)
-              )
-            end
-          )
-        end
+      @points = points
     end
 
     def to_a
       @points
     end
 
+    # PDF
+    def to_percentage()
+      @to_percentage ||=
+        begin
+          sum = points.sum(&:last)
+          Histogram.new(
+            points.map do |(x,y)|
+              [
+                x,
+                y.fdiv(sum)
+              ]
+            end
+          )
+        end
+    end
+
+    # literal CDF
     def integral()
       begin
         sum = 0
         Histogram.new(
-          points.map do |(one, two)|
-            sum += two
-            [one, sum]
+          points.map do |(x, y)|
+            sum += y
+            [x, sum]
           end
         )
       end
@@ -79,6 +75,15 @@ module Maxima
 
     def to_gnu_plot()
       [*points.map(&:to_a).transpose, w: "points"]
+    end
+
+    def <=>(other)
+      case other
+      when Array, Histogram
+        self.to_a <=> other.to_a
+      else
+        -1
+      end
     end
   end
 end

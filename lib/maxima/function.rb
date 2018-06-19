@@ -1,6 +1,6 @@
 module Maxima
   class Function < Unit
-    attr_accessor :variables
+    attr_accessor :string, :variables
 
     def initialize(string, variables = nil, **options)
       string = string.to_s
@@ -9,17 +9,18 @@ module Maxima
       @variables = variables || Function.variables_in_string(string)
     end
 
-    VARIABLE_REGEX = /(?:\s)?[%|a-z|A-Z]+/.freeze
+    # This strategy fails for functions (cos etc.). However, that does not impact it's actual usage.
+    VARIABLE_REGEX = /[%|a-z|A-Z]+/.freeze
     IGNORE_VARIABLES = %w(%e %i).freeze
     def self.variables_in_string(string)
-      string.scan(VARIABLE_REGEX).uniq - IGNORE_VARIABLES
+      (string.scan(VARIABLE_REGEX) - IGNORE_VARIABLES).to_set
     end
 
     def integral(t0 = nil, t1 = nil, v: "x")
       if t0 && t1
-        Maxima.integrate(@string, t0, t1, v: v)[:integral]
+        Maxima.integrate(to_maxima_input, t0, t1, v: v)[:integral]
       else
-        Maxima.integrate(@string, v: v)[:integral]
+        Maxima.integrate(to_maxima_input, v: v)[:integral]
       end
     end
 
@@ -28,8 +29,8 @@ module Maxima
       i_v.at(v => t1) - i_v.at(v => t0)
     end
 
-    def derivative(v: "x")
-      Maxima.diff(@string, v: v)[:diff]
+    def derivative(variable = nil, v: "x")
+      Maxima.diff(to_maxima_input, v: (variable || v))[:diff]
     end
 
     def between(min, max, steps)
@@ -47,7 +48,7 @@ module Maxima
       if variables.any?
         Function.new(string, variables)
       else
-        Unit.parse(string)
+        Unit.parse_float(string)
       end
     rescue
       nil
@@ -71,15 +72,16 @@ module Maxima
       case v
       when Hash
         v.each do |k,t|
-          if @variables.include?(t)
-            s.gsub!(k.to_s, "(#{t})")
+          k = k.to_s
+          if @variables.include?(k)
+            s.gsub!(k, "(#{t})")
           end
         end
       else
-        throw "Must specify the variable for at() if the function has more than one variable" if @variables.length != 1
+        throw :must_specify_variables_in_hash if @variables.length != 1
         s.gsub!(@variables.first, "(#{v})")
       end
-      Function.new(s).simplified
+      Function.parse(s).simplified
     end
 
     def ==(other)

@@ -5,6 +5,8 @@ module Maxima
   end
 
   class Float < Unit
+    ZERO = Float.new(0).freeze
+
     attr_accessor :real
 
     def initialize(real = nil, **options)
@@ -15,10 +17,8 @@ module Maxima
 
     def <=>(other)
       case other
-      when ::Float
-        @real <=> other
-      when Float
-        @real <=> other.real
+      when ::Float, Float
+        @real <=> other.to_f
       else
         -1
       end
@@ -34,6 +34,10 @@ module Maxima
 
     def imaginary?
       false
+    end
+
+    def derivative(v: nil)
+      ZERO
     end
   end
 end

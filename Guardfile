@@ -17,7 +17,7 @@
 
 group 'tests' do
   guard :rspec, all_on_start: false, all_after_pass: false, cmd: 'bundle exec rspec' do
-    watch(%r{^lib/.*\.rb$}) { "spec" }
-    watch(%r{^spec/.*_spec\.rb$}) { "spec" }
+    watch(%r{^lib/.*\.rb$}) { |m| "spec/#{m[1]}_spec.rb" }
+    watch(%r{^spec/.*_spec\.rb$}) { |m| "spec/#{m[1]}_spec.rb" }
   end
 end

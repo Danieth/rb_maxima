@@ -14,18 +14,19 @@ module Maxima
     end
 
     WHITESPACE_OR_PARENTHESES_REGEX = /(\s|\(|\))/
-    COMPLEX_REGEX = /(-?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)((?:\*)?(?:%)?i)?/
+    COMPLEX_REGEX = /(-?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)((?:\*)?(?:%)?\s*i)?|((?:\s*)-?%i)/
 
     def self.parse(maxima_output)
+      maxima_output = maxima_output.to_s unless maxima_output.is_a?(String)
       string = maxima_output.gsub(WHITESPACE_OR_PARENTHESES_REGEX, "")
-
-      s = string.scan(COMPLEX_REGEX)
 
       real = 0
       imaginary = 0
 
-      s.each do |(float, is_imaginary)|
-        if is_imaginary
+      string.scan(COMPLEX_REGEX) do |(float, is_imaginary, is_just_imaginary_one)|
+        if is_just_imaginary_one
+          imaginary += (is_just_imaginary_one.start_with? "-") ? -1 : 1
+        elsif is_imaginary
           imaginary += float.to_f
         else
           real += float.to_f
@@ -36,15 +37,6 @@ module Maxima
         Float.new(real, maxima_output: maxima_output)
       else
         Complex.new(real, imaginary, maxima_output: maxima_output)
-      end
-    end
-
-    def pretty_to_s
-      if real == 0
-        "#{@imaginary}i"
-      else
-        operand = @real.positive? ? '+' : '-'
-        "#{@imaginary}i #{operand} #{@real.abs}"
       end
     end
 
@@ -59,12 +51,15 @@ module Maxima
       @real == other.real && @imaginary == other.imaginary
     end
 
+    # Definitions are somewhat contrived and not per se mathematically accurate.
     def positive?
-      @real > 0 && @imaginary > 0
+      !negative?
     end
 
+    # At least one scalar must be negative & the others non positive
     def negative?
-      @real < 0 && @imaginary < 0
+      (@real < 0 && @imaginary <= 0) ||
+      (@imaginary < 0 && @real <= 0)
     end
 
     def zero?
@@ -72,11 +67,11 @@ module Maxima
     end
 
     def imaginary?
-      true
+      @imaginary != 0
     end
 
     def real?
-      false
+      @imaginary == 0
     end
   end
 end

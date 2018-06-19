@@ -4,6 +4,7 @@ require "bundler/setup"
 require "maxima"
 
 require "pry"
+ENV["DEBUG_RB_MAXIMA"] = "1"
 Pry.start
 
 IRB.start(__FILE__)

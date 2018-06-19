@@ -21,6 +21,39 @@ module Maxima
       end
     end
 
+    POSITIVE_REAL = (1..10).map { |float| Maxima.Float(float) }
+    NEGATIVE_REAL = (-1..-10).map { |float| Maxima.Float(float) }
+    NON_ZERO_REAL = ((-10..-1).to_a + (1..10).to_a).map { |float| Maxima.Float(float) }
+    ZERO_REAL     = %w(0).map { |float| Maxima.Float(float) }
 
+    POSITIVE_REAL.each do |float|
+      context "positive" do
+        it { expect(float).to satisfy("#{float} is positive") { |f| f.positive? } }
+        it { expect(float).not_to satisfy("#{float} is negative") { |f| f.negative? } }
+      end
+    end
+
+    NEGATIVE_REAL.each do |float|
+      context "negative" do
+        it { expect(float).not_to satisfy("#{float} is positive") { |f| f.positive? } }
+        it { expect(float).to satisfy("#{float} is negative") { |f| f.negative? } }
+      end
+    end
+
+    NON_ZERO_REAL.each do |float|
+      context "non zero real" do
+        it { expect(float).to satisfy("#{float} is real") { |f| f.real? } }
+        it { expect(float).not_to satisfy("#{float} is zero") { |f| f.zero? } }
+        it { expect(float).not_to satisfy("#{float} is imaginary") { |f| f.imaginary? } }
+      end
+    end
+
+    ZERO_REAL.each do |float|
+      context "zero" do
+        it { expect(float).to satisfy("#{float} is real") { |f| f.real? } }
+        it { expect(float).to satisfy("#{float} is zero") { |f| f.zero? } }
+        it { expect(float).not_to satisfy("#{float} is imaginary") { |f| f.imaginary? } }
+      end
+    end
   end
 end

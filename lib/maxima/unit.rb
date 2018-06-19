@@ -16,6 +16,10 @@ module Maxima
     end
 
     def self.parse(m)
+      Function.parse(m)
+    end
+
+    def self.parse_float(m)
       Rational.parse(m) || Complex.parse(m)
     end
 
@@ -33,10 +37,6 @@ module Maxima
       end
     end
 
-    def absolute_difference(other)
-      Function.new("abs(#{self - other})")
-    end
-
     def simplified
       @simplified ||= through_maxima(:expand)
     end
@@ -46,10 +46,6 @@ module Maxima
       @after_maxima ||= Command.output(itself: Unit) do |c|
         c.let :itself, self.to_s, *array_options, **options
       end[:itself]
-    end
-
-    def simplified!
-      simplified.to_s
     end
 
     def to_maxima_input
@@ -107,8 +103,14 @@ module Maxima
       to_f < 0
     end
 
+    # Basic string identity
     def ==(other)
       (self <=> other) == 0
+    end
+
+    # True mathematical equivalence
+    def ===(other)
+      (self == other) || Maxima.equivalence(self, other)[:is_equal]
     end
   end
 end

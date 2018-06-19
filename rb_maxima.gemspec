@@ -8,18 +8,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Daniel Ackerman"]
   spec.email         = ["daniel.joseph.ackerman@gmail.com"]
 
-  spec.summary       = %q{A gem that allows for mathematical calculations using the open source `Maxima` library!}
-  spec.description   = %q{Ruby developers have, for as long as I can remember, had a disheveled heap of scientific and mathematical libraries - many of which operate in pure ruby code. Given a problem we either kludge together some cobbled mess or turn to Python/R/etc. And to this I say no more! `rb_maxima` allows a ruby developer to directly leverage the unbridled power of an open source, lisp powered, computer algebra system!}
+  spec.summary       = %q{A gem that allows for mathematical calculations using the open source Maxima library!}
+  spec.description   = %q{Ruby developers have, for as long as I can remember, had a disheveled heap of scientific and mathematical libraries - many of which operate in pure ruby code. Given a problem we either kludge together some cobbled mess or turn to Python/R/etc. And to this I say no more! rb_maxima allows a ruby developer to directly leverage the unbridled power of the open source, lisp powered, computer algebra system that is Maxima!}
   # spec.homepage      = "TODO: Put your gem's website or public repo URL here."
   spec.license       = "MIT"
-
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  end
 
   spec.files         = Dir['lib/**/*.rb']
 

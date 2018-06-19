@@ -13,7 +13,7 @@ module Maxima
       Command.new()
         .with_options(
           use_fast_arrays: true,
-          float: true,
+          float: true
         ).tap do |c|
         yield c
       end.output_variables(*v)
@@ -34,10 +34,10 @@ module Maxima
 
     def let(variable_or_variables, expression, *unary_operations, **unary_operations_options)
       add_variable(variable_or_variables)
-      expression = _apply_unary_operations(expression, *unary_operations, **unary_operations_options)
+
 
       variable   = Maxima.mformat(variable_or_variables)
-      expression = Maxima.mformat(expression)
+      expression = _apply_unary_operations(expression, *unary_operations, **unary_operations_options)
 
       _let(variable, expression)
     end
@@ -57,6 +57,10 @@ module Maxima
       @commands << "#{variable} : #{expression}"
     end
 
+    def <<(expression)
+      @commands << expression
+    end
+
     def _apply_unary_operations(expression, *unary_operations, **unary_operations_options)
       unary_operations = Set.new(unary_operations)
       unary_operations_options.map do |option, is_enabled|
@@ -65,26 +69,28 @@ module Maxima
 
       [
         unary_operations.map { |unary_operation| "#{unary_operation}(" },
-        expression,
+        Maxima.mformat(expression),
         ")" * unary_operations.count
       ].join()
     end
 
     OPTIONS = {
       float:           -> (enabled) { "float: #{enabled}" },
-      use_fast_arrays: -> (enabled) { "use_fast_arrays: #{enabled}" }
+      use_fast_arrays: -> (enabled) { "use_fast_arrays: #{enabled}" },
+      real_only:       -> (enabled) { "realonly: #{enabled}" }
     }
 
     def options_commands()
       [].each do |commands|
         @options.each do |option, configuration|
+          # warn that option is not applicable
           next unless OPTIONS[option]
           commands << OPTIONS[option].call(configuration)
         end
       end
     end
 
-    def run_shell(extract_variables = nil, debug: ENV["DEBUG"])
+    def run_shell(extract_variables = nil, debug: ENV["DEBUG_RB_MAXIMA"])
       inputs = [*dependencies_input, *options_commands(), *@commands]
 
       inputs << "grind(#{extract_variables.join(', ')})" if extract_variables

@@ -3,22 +3,22 @@ module Maxima
 
     attr_accessor :numerator, :denominator
 
-    def initialize(string, numerator, denominator, title = nil)
-      super(string, title)
+    def initialize(numerator, denominator, **options)
+      super(**options)
       @numerator = numerator
       @denominator = denominator
     end
 
-    REGEX = /(\d+)\/(\d+)/
-    def self.parse(input_string)
-      _, numerator, denominator = REGEX.match(input_string).to_a
+    REGEX = /\s*(\d+)\s*\/\s*(\d+)\s*/
+    def self.parse(maxima_output)
+      _, numerator, denominator = REGEX.match(maxima_output).to_a
 
-      return nil if numerator.nil? || denominator.nil?
+      return if numerator.nil? || denominator.nil?
 
       if numerator == 0
-        Float.new(input_string, 0)
+        Float.new(0, maxima_output: maxima_output)
       else
-        Rational.new(input_string, numerator.to_i, denominator.to_i)
+        Rational.new(numerator.to_f, denominator.to_f, maxima_output: maxima_output)
       end
     rescue StandardError
       nil
@@ -34,6 +34,15 @@ module Maxima
 
     def to_f
       @to_f ||= numerator.fdiv(denominator)
+    end
+
+    def <=>(other)
+      case other
+      when ::Float, ::Rational, Float, Rational
+        self.to_f <=> other.to_f
+      else
+        -1
+      end
     end
   end
 end
