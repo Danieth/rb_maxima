@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{A gem that allows for mathematical calculations using the open source Maxima library!}
   spec.description   = %q{Ruby developers have, for as long as I can remember, had a disheveled heap of scientific and mathematical libraries - many of which operate in pure ruby code. Given a problem we either kludge together some cobbled mess or turn to Python/R/etc. And to this I say no more! rb_maxima allows a ruby developer to directly leverage the unbridled power of the open source, lisp powered, computer algebra system that is Maxima!}
-  # spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "https://github.com/Danieth/rb_maxima"
   spec.license       = "MIT"
 
   spec.files         = Dir['lib/**/*.rb']
