@@ -10,7 +10,9 @@ module Maxima
     end
 
     # This strategy fails for functions (cos etc.). However, that does not impact it's actual usage.
-    VARIABLE_REGEX = /[%|a-z|A-Z]+/.freeze
+    VARIABLE_REGEX = /[%|a-z|A-Z]+[0-9|a-z|A-Z]*/.freeze
+    VARIABLE_REGEX_LOOK_PATTERN = /[%|0-9|a-z|A-Z]/
+    VARIABLE_REPLACEMENT_REGEX = ->(variable) { /(?<!#{VARIABLE_REGEX_LOOK_PATTERN})#{variable}(?!#{VARIABLE_REGEX_LOOK_PATTERN})/ }
     IGNORE_VARIABLES = %w(%e %i).freeze
     def self.variables_in_string(string)
       (string.scan(VARIABLE_REGEX) - IGNORE_VARIABLES).to_set
@@ -74,12 +76,12 @@ module Maxima
         v.each do |k,t|
           k = k.to_s
           if @variables.include?(k)
-            s.gsub!(k, "(#{t})")
+            s.gsub!(VARIABLE_REPLACEMENT_REGEX.call(k), "(#{t})")
           end
         end
       else
         throw :must_specify_variables_in_hash if @variables.length != 1
-        s.gsub!(@variables.first, "(#{v})")
+        s.gsub!(VARIABLE_REPLACEMENT_REGEX.call(@variables.first), "(#{v})")
       end
       Function.parse(s).simplified
     end

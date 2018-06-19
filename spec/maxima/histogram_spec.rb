@@ -15,7 +15,7 @@ module Maxima
         let(:histogram) { Histogram.between(0,10, ->(x) { x ** 2 }, 5) }
         let(:expected_result) { Maxima::Function.parse("x ^ 2") }
 
-        it { expect(histogram.polynomial_fit(2)).to satisfy("") { |f| f === expected_result } }
+        it { expect(histogram.polynomial_fit(2)).to satisfy("equivalence with #{expected_result}") { |f| f === expected_result } }
       end
 
     end

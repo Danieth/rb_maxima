@@ -3,37 +3,32 @@ module Maxima
 
     def self.fit(histogram, degrees)
       throw :degrees_must_be_zero_or_positive if degrees < 0
-      degrees += 1
 
       equation_string, variables = polynomial_equation(degrees)
       results = Maxima.lsquares_estimation(histogram.to_a, [:x, :y], "y = #{equation_string}", variables)
-      mse = results.delete(:mse)
 
-      results.each do |variable, value|
-        equation_string.gsub!("(#{variable})", value.to_s)
-      end
+      function = Maxima::Function.new(equation_string)
 
       {
-        function: Maxima::Function.new(equation_string).simplified,
-        mse: mse
+        mse:      results.delete(:mse),
+        function: function.at(results),
       }
     end
 
     def self.polynomial_equation(degrees, f_of: "x")
-      polynomials = []
-      constant_variables = []
+      polynomials, constant_variables = [], []
 
-      degrees.times.each do |degree|
+      (degrees + 1).times.each do |degree|
         constant_variable = "c#{degree}"
         constant_variables << constant_variable
 
         case degree
         when 0
-          polynomials << "(#{constant_variable})"
+          polynomials << constant_variable
         when 1
-          polynomials << "(#{constant_variable}) * #{f_of}"
+          polynomials << "#{constant_variable} * #{f_of}"
         else
-          polynomials << "(#{constant_variable}) * #{f_of} ^ #{degree}"
+          polynomials << "#{constant_variable} * #{f_of} ^ #{degree}"
         end
       end
 

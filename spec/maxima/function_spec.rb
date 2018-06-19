@@ -11,6 +11,7 @@ module Maxima
         "x - y"  => %w(x y).to_set,
         "y ^ 34"  => %w(y).to_set,
         "y ^ 34 + x * 0"  => %w(y x).to_set,
+        "c0 + 1 + x*c1 + c2*x"  => %w(c0 x c1 c2).to_set,
       }.each do |input, output|
         it "should return #{output} for the function #{input}" do
           actual_output = nil
