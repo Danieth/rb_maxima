@@ -61,12 +61,10 @@ module Maxima
           actual_output = Maxima.lagrangian("x ^ 10 + y ^ (1/10)", [:x, :y], "x + y - 10", [1,1])
         }.to_not raise_error
 
-        expect(actual_output).to eq(
-                                   {
-                                     x: Maxima::Float.new(0.4787078489206559),
-                                     y: Maxima::Float.new(9.521286271045522)
-                                   }
-                                 )
+        x, y = actual_output.values_at(:x, :y)
+
+        expect(x.to_f).to be_within(0.001 * 0.4787078489206621).of(0.4787078489206621)
+        expect(y.to_f).to be_within(0.001 * 9.5212862710455170).of(9.5212862710455170)
       end
     end
 
