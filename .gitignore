@@ -10,3 +10,5 @@ vendor/cache/**
 /pkg/
 /spec/reports/
 /tmp/
+
+./rb_maxima-*
