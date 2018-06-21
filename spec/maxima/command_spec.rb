@@ -8,6 +8,23 @@ module Maxima
       expect { command }.to_not raise_error
     end
 
+    describe "#options_commands" do
+      it "should begin with no options" do
+        expect(Command.new().options_commands).to eq([])
+      end
+
+      it "should contain all valid options converted into the correct string format" do
+        expect(Command.new().options_commands).to eq([])
+        expect(Command.new().with_options(float: true).options_commands).to eq(["float: true"])
+        expect(Command.new().with_options(float: false).options_commands).to eq(["float: false"])
+
+        expect(Command.new().with_options(use_fast_arrays: true).options_commands).to eq(["use_fast_arrays: true"])
+        expect(Command.new().with_options(real_only: true).options_commands).to eq(["realonly: true"])
+
+        expect(Command.new().with_options(float: true, use_fast_arrays: true, real_only: false).options_commands).to eq(["float: true", "use_fast_arrays: true", "realonly: false"])
+      end
+    end
+
     describe "#output_variables" do
       it "should work with a single assignment" do
         command.let(:a, 4.0)
