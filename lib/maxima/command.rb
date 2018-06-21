@@ -81,7 +81,7 @@ module Maxima
     }
 
     def options_commands()
-      [].each do |commands|
+      [].tap do |commands|
         @options.each do |option, configuration|
           # warn that option is not applicable
           next unless OPTIONS[option]
