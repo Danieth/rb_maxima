@@ -18,7 +18,7 @@ module Maxima
 
     def self.from_csv(csv)
       Histogram.new(
-        *CSV.read(csv).map { |array| array.map(&:to_i) }
+        *CSV.read(csv).map { |array| array.map(&:to_f) }
       )
     end
 
